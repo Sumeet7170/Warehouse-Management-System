@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in / Sign up - Warehouse Management System</title>
+    <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="card login-card shadow-lg">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon mb-3"><i class="bi bi-boxes"></i></div>
+                <h4 class="fw-bold mb-1">Warehouse Management</h4>
+                <div class="text-muted" id="authSubtitle">Sign in to your account</div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-3 auth-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-semibold" id="tabSignInBtn" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold" id="tabSignUpBtn" type="button"><i class="bi bi-person-plus me-1"></i>Sign Up</button>
+                </li>
+            </ul>
+
+            <div id="authAlert" class="alert alert-danger d-none" role="alert"></div>
+            <div id="authSuccess" class="alert alert-success d-none" role="alert"></div>
+
+            <!-- Sign In Form -->
+            <form id="loginForm" novalidate>
+                <div class="mb-3">
+                    <label class="form-label" for="loginEmail">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="loginEmail" autocomplete="username" placeholder="name@company.com" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" for="loginPassword">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="loginPassword" autocomplete="current-password" placeholder="Enter password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggleLoginPw" aria-label="Show password"><i class="bi bi-eye"></i></button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit" id="loginBtn">Sign in</button>
+                <div class="text-center mt-3">
+                    <span class="text-muted small">Don't have an account? </span>
+                    <a href="javascript:void(0)" class="small text-decoration-none fw-semibold" id="linkToSignUp">Sign up now</a>
+                </div>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="d-none" novalidate>
+                <div class="mb-3">
+                    <label class="form-label" for="regName">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="regName" placeholder="e.g. Alex Sharma" maxlength="120" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="regEmail">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="regEmail" autocomplete="username" placeholder="name@company.com" maxlength="150" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="regRole">Role</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                        <select class="form-select" id="regRole" required>
+                            <option value="staff" selected>Warehouse Staff (Daily Operations)</option>
+                            <option value="admin">Administrator (Full Access)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="regPassword">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="regPassword" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggleRegPw" aria-label="Show password"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <div class="form-text small text-muted">Must be at least 8 characters with a letter and a number.</div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" for="regConfirmPassword">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control" id="regConfirmPassword" autocomplete="new-password" placeholder="Re-enter password" minlength="8" required>
+                        <button class="btn btn-outline-secondary" type="button" id="toggleRegConfirmPw" aria-label="Show password"><i class="bi bi-eye"></i></button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit" id="regBtn">Create Account</button>
+                <div class="text-center mt-3">
+                    <span class="text-muted small">Already have an account? </span>
+                    <a href="javascript:void(0)" class="small text-decoration-none fw-semibold" id="linkToSignIn">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/login.js"></script>
+</body>
+</html>

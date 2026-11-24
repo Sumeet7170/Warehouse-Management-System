@@ -1,0 +1,18 @@
+# Database logs and temporary runtime files
+backend/logs/*.log
+!backend/logs/.htaccess
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary backups
+*.tmp
+*.bak
