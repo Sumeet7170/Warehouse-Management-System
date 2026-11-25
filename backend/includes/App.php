@@ -30,11 +30,15 @@ final class App
 
     public static function log(string $message): void
     {
+        $line = '[' . date('Y-m-d H:i:s') . '] ' . $message;
         $dir = WMS_ROOT . '/logs';
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0775, true);
+        $wrote = false;
+        if ((is_dir($dir) || @mkdir($dir, 0775, true)) && is_writable($dir)) {
+            $wrote = @file_put_contents($dir . '/app.log', $line . PHP_EOL, FILE_APPEND) !== false;
         }
-        @file_put_contents($dir . '/app.log', '[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL, FILE_APPEND);
+        if (!$wrote || getenv('RENDER') || getenv('VERCEL')) {
+            @error_log('[WMS] ' . $line);
+        }
     }
 
     public static function handleException(Throwable $e): void

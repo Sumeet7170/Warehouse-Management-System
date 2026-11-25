@@ -81,7 +81,7 @@
         try {
             res = await fetch(url.toString(), init);
         } catch (e) {
-            throw new W.ApiError('Cannot reach the server. Make sure Apache and MySQL are running.', 0);
+            throw new W.ApiError('Cannot reach the server. Please check your connection and try again.', 0);
         }
         var json = null;
         try { json = await res.json(); } catch (e) { json = null; }

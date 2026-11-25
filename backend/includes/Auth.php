@@ -11,8 +11,20 @@ final class Auth
             return;
         }
         $app = App::config('app');
-        $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https')
+            || (($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '') === 'on')
+            || ((int)($_SERVER['SERVER_PORT'] ?? 0) === 443);
+
+        $driver = $app['session_driver'] ?? 'auto';
+        $useDbSessions = $driver === 'db'
+            || ($driver === 'auto' && (getenv('VERCEL') || getenv('RENDER')));
+
         if (!headers_sent()) {
+            if ($useDbSessions) {
+                $handler = new DbSessionHandler(App::config('db')['name'], (int)$app['session_lifetime']);
+                session_set_save_handler($handler, true);
+            }
             session_name($app['session_name']);
             session_set_cookie_params([
                 'lifetime' => 0,
@@ -21,8 +33,8 @@ final class Auth
                 'httponly' => true,
                 'samesite' => 'Lax',
             ]);
+            ini_set('session.gc_maxlifetime', (string)$app['session_lifetime']);
         }
-        ini_set('session.gc_maxlifetime', (string)$app['session_lifetime']);
         if (session_status() !== PHP_SESSION_ACTIVE) {
             @session_start();
         }

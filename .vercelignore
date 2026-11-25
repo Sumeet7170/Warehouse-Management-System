@@ -1,0 +1,10 @@
+.git
+.vscode
+.idea
+docker
+Dockerfile
+render.yaml
+run.bat
+backend/logs/*.log
+*.tmp
+*.bak

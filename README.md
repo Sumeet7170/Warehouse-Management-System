@@ -1,164 +1,164 @@
 # Warehouse Management System (WMS)
 
-[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Database](https://img.shields.io/badge/MySQL%20%2F%20MariaDB-10.4%2B-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Frontend](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-[![Architecture](https://img.shields.io/badge/Architecture-Multi--Tenant%20Isolated-success)]()
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)]()
+A complete multi-warehouse inventory system built with **PHP 8.1+**, **MySQL/MariaDB**, **HTML, CSS, Bootstrap 5 and JavaScript**.
 
-A complete, high-performance, multi-warehouse inventory management system featuring **strict FIFO inventory valuation**, **batch & expiry tracking**, **camera & handheld barcode scanning**, **stock transfers**, **purchase & sales order workflows**, and **dynamic multi-tenant workspace isolation**.
+The project is split into two folders:
 
-Built natively with **PHP 8.1+**, **MySQL / MariaDB**, **Vanilla JavaScript**, and **Bootstrap 5** with zero external runtime dependencies.
+| Folder | Contents |
+|---|---|
+| `backend/` | PHP JSON API, business logic, database schema, installer |
+| `frontend/` | Responsive admin dashboard (HTML, CSS, JavaScript, Bootstrap, local vendor libraries) |
 
----
-
-## 📸 Key Features
-
-* **Strict FIFO Inventory Deduction**: Automated first-in, first-out stock consumption across batches on sales and transfer dispatches. Over-selling or selling expired inventory is blocked at the database engine level.
-* **Batch & Expiry Date Management**: Real-time batch-level tracking per warehouse. Automatic expiry alerting for batches approaching expiry within 30 days and immediate write-off handling for expired goods.
-* **Multi-Warehouse Stock Transfers**: Full transfer lifecycle: *Draft* &rarr; *Dispatch* (FIFO source warehouse deduction & transit status) &rarr; *Receive* (destination batch creation/merging preserving original lot dates).
-* **Barcode Generation & Scanning**:
-  * Integrated **EAN-13** and **Code-128** barcode rendering via JsBarcode.
-  * Native hardware scanner support (USB / Bluetooth keyboard emulation).
-  * In-browser live camera scanning via `html5-qrcode`.
-* **Dynamic Multi-Tenant Isolation**: Every newly registered user automatically gets their own dedicated, isolated database schema (`wms_account_{id}`) initialized clean from **ZERO** (0 products, 0 warehouses, 0 stock). No cross-account data bleed.
-* **Comprehensive Analytics & Reports**: Live 7-day sales vs. purchase trend charts (Chart.js), real-time stock valuation ledger, low stock alerts, transaction audits, and one-click CSV export with formula injection sanitization.
-* **Zero External CDN Dependencies**: All assets (Bootstrap, Bootstrap Icons, Chart.js, JsBarcode, html5-qrcode) are bundled locally in `frontend/assets/vendor/` for 100% offline air-gapped readiness.
+The frontend talks to the backend through one endpoint (`backend/api/index.php`) using `fetch()` with a PHP session cookie and a CSRF token. All libraries (Bootstrap, Bootstrap Icons, JsBarcode, html5-qrcode, Chart.js) are stored locally in `frontend/assets/vendor`, so the app works without internet access.
 
 ---
 
-## ⚡ Quick Start
+## 1. Requirements
 
-### 1. Requirements
-* **PHP 8.1 or newer** (with `pdo_mysql` and `mbstring` extensions enabled)
-* **MySQL 8.0+** or **MariaDB 10.4+** (supporting `CHECK` constraints)
-* Modern web browser (Chrome, Edge, Firefox, Safari)
+* XAMPP with **PHP 8.1 or newer** (current XAMPP releases qualify) and **MariaDB/MySQL** (MariaDB 10.4+ or MySQL 8.0.16+, needed for CHECK constraints)
+* A modern browser (Chrome, Edge, Firefox, Safari)
+
+## 2. Installation with XAMPP
+
+1. **Copy the project.** Create the folder `C:\xampp\htdocs\wms` (macOS/Linux: `/Applications/XAMPP/htdocs/wms` or `/opt/lampp/htdocs/wms`) and extract the zip into it so you get:
+   ```
+   htdocs/wms/backend
+   htdocs/wms/frontend
+   htdocs/wms/README.md
+   ```
+2. **Start services.** Open the XAMPP Control Panel and start **Apache** and **MySQL**.
+3. **Create the database** (choose one method):
+   * **Command line (recommended):**
+     ```
+     C:\xampp\php\php.exe C:\xampp\htdocs\wms\backend\database\install.php
+     ```
+     Initializes the complete database schema with administrative access.
+   * **phpMyAdmin:** open `http://localhost/phpmyadmin`, click **Import**, and import `backend/database/schema.sql`.
+4. **Check the database settings** in `backend/config/config.php`. The XAMPP defaults (`root`, empty password, `127.0.0.1:3306`, database `wms_db`) already match. You can also set the time zone and the expiry alert window (`expiry_alert_days`, default 30 days) there.
+5. **Open the application:** `http://localhost/wms/frontend/`
+
+### Login Accounts & Showcases
+
+| Role / Owner | Email | Password | Dataset Details |
+|---|---|---|---|
+| **Sumeet Tiwari (HR Showcase)** | `sumeettiwari22@gmail.com` | `$M@rty22` | **19 Warehouses**, 20 Products, **5 Low Stock**, **1 Expiring + 4 Expired**, Live 7-Day Trend Chart, ₹ 253,170 Stock Valuation |
+
+> **Dynamic Multi-Tenancy**: When any new user registers via the sign-up page, the system automatically provisions an isolated database schema (`wms_account_{id}`) initialized clean from **ZERO** (0 products, 0 warehouses, 0 stock). Each business tenant operates with full administrative privileges over their own isolated data without cross-tenant bleed.
+
+Passwords can be changed at any time (user menu, top right, then **Change password**). The currency symbol and number format can be changed in `frontend/assets/js/config.js`.
 
 ---
 
-### Option A: 1-Click Automated Launcher (Windows)
-Double-click `run.bat` or run from terminal:
-```cmd
-run.bat
+## 3. Roles
+
+| Capability | Administrator | Staff |
+|---|:---:|:---:|
+| Dashboard, reports, transaction log, stock views | Yes | Yes |
+| Products, vendors, customers: add / edit | Yes | Yes |
+| Purchases, sales, transfers (create, dispatch, receive), adjustments, damaged stock | Yes | Yes |
+| Delete products / vendors / customers | Yes | No |
+| Cancel purchases and transfers | Yes | No |
+| Manage warehouses and categories | Yes | View only |
+| Manage users, view activity logs | Yes | No |
+
+Permissions are enforced on the server for every API action, not only by hiding menu items.
+
+## 4. Feature map
+
+| # | Requirement | Where to find it |
+|---|---|---|
+| 1 | Products (add, edit, delete, search, SKU, price, category, barcode) | **Products** |
+| 2 | Barcode generate / scan | **Barcode** page, barcode button in **Products**, scan fields in every product picker |
+| 3 | Stock transfer with status | **Stock Transfers** (pending, in transit, completed, cancelled) |
+| 4 | Purchases, received stock | **Purchases** (create, partial or full receipt) |
+| 5 | Sales with inventory deduction | **Sales** (FIFO, printable invoice) |
+| 6 | Vendors and purchase history | **Vendors** |
+| 7 | Customers and sales history | **Customers** |
+| 8 | Damaged stock | **Damaged Stock** |
+| 9 | Low stock alerts | Dashboard, bell icon, **Low Stock** |
+| 10 | Stock adjustment with reason | **Stock Adjustments** |
+| 11 | Reports (stock, purchases, sales, transfers, damaged, movements) | **Reports** (filters, pagination, CSV export, print) |
+| 12 | FIFO | Automatic on sales and transfer dispatch |
+| 13 | Batch number tracking by warehouse | **Batches**, **Stock Levels** |
+| 14 | Expiry dates | **Expiry Alerts**, expired batches are never sold or transferred |
+| 15 | Transaction log | **Transaction Log** |
+
+### How the key workflows behave
+
+* **Purchase:** create a purchase with vendor, warehouse and lines (quantity, unit cost, batch number, expiry date). A batch number is generated if left blank. Stock only enters inventory when you **receive** it, either immediately (tick *Receive stock immediately*) or later with partial or full receipts.
+* **Sale (FIFO):** stock is issued from the oldest received non-expired batch first, across as many batches as needed. The invoice shows exactly which batches were used. A sale fails, and nothing is changed, if any line lacks enough non-expired stock.
+* **Transfer:** *Create* (no stock moves) then *Dispatch* (FIFO deduction at the source, status in transit) then *Receive* (batches are created or merged at the destination, original received date and expiry are preserved). Cancelling an in-transit transfer returns the stock to the source warehouse.
+* **Adjustment:** pick warehouse, product and batch; increase or decrease with a mandatory reason. An increase can also create a new batch.
+* **Damaged stock:** removes quantity from a batch immediately so it is no longer sellable. Use **Expiry Alerts** then **Write off** to remove expired stock.
+* **Low stock:** products whose non-expired stock is below their minimum level (combined across warehouses, or per warehouse using the filter).
+
+### Barcodes
+
+* **USB / Bluetooth scanners** behave like a keyboard: click any "Scan barcode or search product" field, scan, and the product is added automatically (the scanner's Enter key triggers the lookup).
+* **Camera scanning** uses the camera button. Browsers only allow camera access on `localhost` or HTTPS, so `http://localhost/wms/frontend/` works, while `http://192.168.x.x/...` needs HTTPS.
+* Barcodes are rendered as EAN-13 when valid, otherwise Code 128. Labels can be printed in bulk.
+
+---
+
+## 5. Project structure
+
 ```
-* Automatically verifies PHP and MySQL services.
-* Automatically initializes database schema if first-time run.
-* Starts PHP built-in server on port `8000`.
-* Launches your browser to `http://localhost:8000/frontend/`.
-
----
-
-### Option B: Manual CLI (Without `run.bat`)
-1. Ensure MySQL is running (via XAMPP or MySQL service).
-2. Start the built-in PHP development server from the project root:
-   ```bash
-   cd wms
-   php -S localhost:8000
-   ```
-3. Open your browser and navigate to:
-   ```
-   http://localhost:8000/
-   ```
-
----
-
-### Option C: Using XAMPP Apache
-1. Copy or link this project into your XAMPP `htdocs` directory:
-   ```cmd
-   mklink /J "C:\xampp\htdocs\wms" "C:\path\to\wms"
-   ```
-2. Start **Apache** and **MySQL** in the XAMPP Control Panel.
-3. Open in browser: `http://localhost/wms/frontend/`
-
----
-
-## 🔐 Credentials & Showcase Account
-
-| Account | Email | Password | Role | Dataset Overview |
-|---|---|---|---|---|
-| **Sumeet Tiwari (HR Showcase)** | `sumeettiwari22@gmail.com` | `$M@rty22` | **Administrator** | **19 Warehouses**, 20 Products, **5 Low Stock Items**, **1 Expiring + 4 Expired Batches**, Live 7-Day Trend Chart, ₹ 253,170 Stock Valuation |
-
-> **Self-Service Registration**: Anyone can register a new account on the Sign Up tab. Upon registration, an isolated workspace is provisioned starting completely from **ZERO**, granting full admin controls over that workspace.
-
----
-
-## 🏗️ Project Architecture
-
-```
-wms/
-├── backend/
-│   ├── api/
-│   │   └── index.php              # Single entry point / Front Controller
-│   ├── config/
-│   │   └── config.php             # Database credentials & application settings
-│   ├── database/
-│   │   ├── schema.sql             # Relational DDL (tables, keys, check constraints)
-│   │   ├── check_db.php           # Non-destructive connection & readiness probe
-│   │   └── install.php            # Command-line schema & admin seeder
-│   ├── includes/
-│   │   ├── App.php                # Global config container & logger
-│   │   ├── Auth.php               # Session, RBAC, dynamic tenant switching, CSRF
-│   │   ├── Database.php           # PDO singleton, connection pool & transactions
-│   │   ├── Inventory.php          # Core FIFO engine & stock ledger
-│   │   ├── Router.php             # Dynamic REST-style module dispatcher
-│   │   └── V.php                  # Input sanitization & validator
-│   ├── modules/                   # Isolated business controllers
-│   │   ├── AuthModule.php         # Sign in, registration, multi-tenant provisioning
-│   │   ├── DashboardModule.php    # KPI aggregation, trend analysis, alerts
-│   │   ├── ProductsModule.php     # Catalog management & SKU generation
-│   │   ├── PurchasesModule.php    # PO creation, partial/full receipt workflows
-│   │   ├── SalesModule.php        # FIFO deduction sales & invoice printing
-│   │   ├── TransfersModule.php    # Multi-step warehouse transfers
-│   │   ├── AdjustmentsModule.php  # Manual inventory reconciliations
-│   │   ├── DamagedModule.php      # Quarantine & damaged stock write-offs
-│   │   ├── ReportsModule.php      # Filtered data reports & CSV exports
-│   │   └── WarehousesModule.php   # Multi-facility management
-│   └── logs/
-│       └── app.log                # Server diagnostic logs
-│
-├── frontend/
-│   ├── index.html                 # Authentication & Registration UI
-│   ├── app.html                   # Single-Page Application (SPA) dashboard shell
-│   └── assets/
-│       ├── css/style.css          # Design system & dark mode responsive theme
-│       ├── js/
-│       │   ├── config.js          # Currency & regional settings
-│       │   ├── core.js            # API client, formatting & modal helpers
-│       │   ├── components.js      # Datatables, live search & camera scanners
-│       │   ├── login.js           # Auth state machine & tab controller
-│       │   ├── app.js             # Client-side hash router
-│       │   └── pages/             # Dynamic page modules (catalog, sales, etc.)
-│       └── vendor/                # Bundled offline libraries (Bootstrap, Chart.js)
-│
-├── index.php                      # Root redirector to frontend/
-├── run.bat                        # Automated Windows orchestrator
-└── README.md                      # Complete system documentation
+backend/
+  api/index.php            Single entry point (front controller)
+  config/config.php        Database, time zone, alert settings
+  includes/                Core classes: App, Database, Auth, Router, Inventory (FIFO / batch engine),
+                           V (validation), Lines, Paginator, Doc (document numbers), Activity, Response
+  modules/                 One class per resource: Products, Purchases, Sales, Transfers, Adjustments,
+                           Damaged, Inventory, Transactions, Reports, Dashboard, Vendors, Customers,
+                           Categories, Warehouses, Users, Activity, Auth, Lookups
+  database/schema.sql      All tables, keys, constraints
+  database/install.php     Command-line installer
+frontend/
+  index.html               Sign-in page
+  app.html                 Application shell (sidebar, top bar)
+  assets/css/style.css
+  assets/js/               core.js, components.js (tables, product search, scanner, line editor), app.js (router)
+  assets/js/pages/         One file per module group
+  assets/vendor/           Bootstrap, Bootstrap Icons, JsBarcode, html5-qrcode, Chart.js
 ```
 
----
+## 6. Database
 
-## 🗄️ Database Architecture
+Tables: `users`, `warehouses`, `categories`, `products`, `vendors`, `customers`, `purchases`, `purchase_items`, `sales`, `sale_items`, `sale_item_batches`, `inventory_batches`, `stock_transfers`, `stock_transfer_items`, `stock_transfer_batches`, `stock_adjustments`, `damaged_stock`, `stock_transactions`, `activity_logs`, plus `login_attempts` and `document_sequences` (support tables).
 
-The relational schema strictly enforces transactional consistency and history preservation:
+* Stock lives in `inventory_batches`, one row per **product + warehouse + batch number**, so every warehouse and batch has its own quantity.
+* `CHECK (quantity >= 0)` plus guarded `UPDATE ... WHERE quantity >= ?` statements make negative inventory impossible.
+* Every stock change is inside a database transaction and appends a row to `stock_transactions` (user, date, warehouse, product, batch, signed quantity, balance after, type, reference). The sum of a batch's ledger always equals its quantity.
+* Duplicate deductions are prevented by row locks and status checks (a transfer can only be dispatched once, a purchase received only up to its ordered quantity) and by per-form idempotency keys (a double click or resubmission returns the original document instead of creating another).
+* Foreign keys protect history: records that are referenced cannot be deleted; mark them inactive instead.
 
-* **`inventory_batches`**: Tracks stock at the discrete **Product + Warehouse + Batch** coordinate with non-negative constraints (`CHECK (quantity >= 0)`).
-* **`stock_transactions`**: Double-entry ledger audit trail. Every stock movement (purchase, sale, dispatch, receipt, adjustment, damage) records user, timestamp, delta, and balance-after.
-* **`document_sequences`**: Atomic sequence counter ensuring collision-free human-readable document identifiers (`PO-202611-0001`, `INV-202611-0001`, `TR-202611-0001`).
-* **Foreign Keys**: Cascade protection prevents deletion of master records that have historical transaction dependencies.
+## 7. Security
 
----
+* Passwords are stored with `password_hash()`; sign-in is locked for 15 minutes after 5 failed attempts.
+* Session cookies are `HttpOnly` and `SameSite=Lax`; the session id is regenerated at sign-in; every state-changing request requires a CSRF token.
+* All SQL uses prepared statements; all output is HTML-escaped; CSV exports neutralise formula injection.
+* Internal folders (`includes`, `modules`, `config`, `database`, `logs`) are blocked from web access by `.htaccess`.
 
-## 🔒 Security Best Practices
+## 8. Testing performed
 
-* **SQL Injection Immunity**: 100% of database interactions execute through parameterized PDO prepared statements.
-* **Strict CSRF Tokens**: State-changing endpoints require valid `X-CSRF-Token` headers matched against secure session tokens.
-* **Brute-Force Rate Limiting**: Exponential lockout after 5 consecutive failed login attempts within 15 minutes.
-* **Session Hardening**: `HttpOnly`, `SameSite=Lax` cookies with automatic session ID regeneration on privilege transitions.
-* **Formula Injection Prevention**: CSV export data fields prepended with sanitizing characters to neutralize spreadsheet command execution.
-* **Directory Shielding**: Internal backend directories (`includes/`, `modules/`, `config/`, `database/`, `logs/`) are protected from direct web traversal via `.htaccess`.
+The workflows below were executed against a real MariaDB database through the HTTP API and through the browser UI (all pages, forms and buttons), and finished with 0 failures:
 
----
+* Purchase (create, idempotent resubmission, partial receipt, over-receipt blocked, receive remainder, cancel rules)
+* FIFO sale across multiple batches, oversell blocked, expired stock blocked, all-or-nothing rollback on multi-line failure, duplicate submission does not deduct twice
+* Transfer (create, dispatch, receive, merge into existing destination batch, cancel in transit returns stock, double dispatch/receive blocked)
+* Stock adjustment (increase, decrease, new batch, negative blocked), damaged stock (including expired write-off)
+* Reports (all six types, filters, summaries, CSV export), transaction log, low-stock and expiry alerts
+* 10 simultaneous sales competing for the same stock: exactly the affordable number succeeded and stock never went negative
+* Role restrictions, lockout after repeated failed sign-ins, CSRF rejection, validation errors
 
-## 📄 License
+## 9. Troubleshooting
 
-This project is licensed under the [MIT License](LICENSE).
+| Problem | Fix |
+|---|---|
+| "Cannot reach the server" | Start Apache and MySQL in XAMPP; open `http://localhost/wms/frontend/` |
+| "An unexpected server error occurred" | Read `backend/logs/app.log`; usually wrong database credentials in `config.php` or the database was not imported |
+| Blank page or `Unknown database` | Run the installer or import `schema.sql` |
+| `install.php` cannot connect | Make sure MySQL is running; if you set a root password in XAMPP, put it in `config.php` |
+| Camera does not start | Use `http://localhost/...` or HTTPS, and allow camera access |
+| Pop-up blocked when printing | Allow pop-ups for the site |
+| Page shows old behaviour after an update | Hard refresh with Ctrl+F5 |

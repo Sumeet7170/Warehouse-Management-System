@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: wms-warehouse-management
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /frontend/index.html
+    envVars:
+      - key: WMS_SESSION_DRIVER
+        value: db
+      - key: WMS_TIMEZONE
+        value: Asia/Kolkata

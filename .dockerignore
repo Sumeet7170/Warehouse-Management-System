@@ -1,0 +1,7 @@
+.git
+.vscode
+.idea
+backend/logs/*.log
+run.bat
+*.tmp
+*.bak

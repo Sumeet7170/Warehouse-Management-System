@@ -387,3 +387,11 @@ CREATE TABLE activity_logs (
     KEY idx_activity_created(created_at),
     CONSTRAINT fk_activity_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE app_sessions (
+    id varchar(128) NOT NULL,
+    data mediumblob NOT NULL,
+    expires_at int UNSIGNED NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_app_sessions_expires(expires_at)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
